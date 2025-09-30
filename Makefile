@@ -1,12 +1,16 @@
+# Mac-friendly Makefile: uses python3 and points tests at src/
+PY := python3
+PIP := $(PY) -m pip
+
 .PHONY: install lint test coverage ci-check
 
 install:
-	python -m pip install --upgrade pip
-	pip install -r requirements.txt
+	$(PY) -m pip install --upgrade pip
+	$(PIP) install -r requirements.txt
 
-# Keep lint non-blocking so CI stays green while you iterate
+# keep non-blocking while you iterate
 lint:
-	pylint src tests || true
+	PYTHONPATH=src pylint src tests || true
 
 test:
 	PYTHONPATH=src pytest -v
@@ -14,5 +18,5 @@ test:
 coverage:
 	PYTHONPATH=src pytest --cov=src/calculator --cov-report=xml --cov-report=term-missing
 
-# Simulate CI locally
+# Run everything like CI
 ci-check: install lint coverage
